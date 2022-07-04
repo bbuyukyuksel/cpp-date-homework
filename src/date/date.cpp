@@ -7,6 +7,8 @@
 #define STATIC
 
 namespace project{
+    
+    // FREE UTIL FUNCTIONS
     static void tokenize(const char * p, int(&date)[3]){
         if(std::strlen(p) > 10)
             exit(EXIT_FAILURE);
@@ -24,6 +26,8 @@ namespace project{
         }
 
     }
+
+    // CTORS
     Date::Date()
     {
 
@@ -44,6 +48,7 @@ namespace project{
         m_mon = date[1];
         m_year = date[2];
     }
+
     Date::Date(std::time_t timer)
     {
         struct std::tm* tm;
@@ -54,6 +59,7 @@ namespace project{
         m_year = tm->tm_year + 1900;
     }
 
+    // GET FUNCTIONS
     int Date::get_month_day()const
     {
         return m_day;
@@ -77,6 +83,20 @@ namespace project{
         return year;
     }
 
+    Date::Weekday Date::get_week_day()const
+    {
+        return static_cast<Date::Weekday>(day_of_week(m_day, m_mon, m_year));
+    }
+
+    // UTIL FUNCTIONS
+    STATIC constexpr bool Date::isleap(int y)
+    {
+        if(y % 4 == 0  && (y % 400 == 0 || y%100 != 0)){
+            return true;
+        }
+        return false;
+    }
+
     STATIC int Date::day_of_week(int d, int m, int y)
     {
         static constexpr int t[] = { 0, 3, 2, 5, 0, 3,
@@ -86,21 +106,7 @@ namespace project{
              y / 400 + t[m - 1] + d) % 7;
     }
 
-
-    Date::Weekday Date::get_week_day()const
-    {
-        return static_cast<Date::Weekday>(day_of_week(m_day, m_mon, m_year));
-    }
-
-    STATIC constexpr bool Date::isleap(int y)
-    {
-        if(y % 4 == 0  && (y % 400 == 0 || y%100 != 0)){
-            return true;
-        }
-        return false;
-    }
-
-    // SET
+    // SET FUNCTIONS
     Date& Date::set_month_day(int day)
     {
         m_day = day;
@@ -124,23 +130,40 @@ namespace project{
         return set_month_day(day).set_month(mon).set_year(year);
     }
 
-    // Operator Functions
+    // RANDOM
+    STATIC Date Date::random_date()
+    {
+        std::random_device dev;
+        static std::mt19937 eng( dev() );
+        static std::uniform_int_distribution dist_year{ random_min_year, random_max_year };
+        static std::uniform_int_distribution dist_mon{ 1, 12 };
+
+        int year{ dist_year(eng) };
+        int mon{ dist_mon(eng) };
+
+        std::uniform_int_distribution dist_day{ 25, mon_duration[mon-1] + static_cast<int>(isleap(year)) };
+        int day{ dist_day(eng) };
+
+        return { day, mon, year };
+    }
+
+    // OPERATOR FUNCTIONS
     Date& Date::operator++()
     {
         int month_duration = (get_month() != 2 && get_month_day() != 28) ? mon_duration[get_month()-1] : mon_duration[get_month()-1] + static_cast<int>(isleap(get_year()));
-
-        // Last day of year
-        if( !(m_mon == 12 && m_day == 31))
+        
+        if( !(m_mon == 12 && m_day == 31)) // If not last day of year
         {
             if(get_month_day() + 1 <= month_duration)
             {
                 ++m_day;
 
-            } else {
+            } else { // If last day of month
                 ++m_mon;
                 m_day = 1;
             }
-        } else {
+        } 
+        else { // If last day of year
             ++m_year;
             m_day = 1;
             m_mon = 1;
@@ -156,19 +179,17 @@ namespace project{
 
     Date& Date::operator--()
     {
-        // Last day of year
-        if( !(m_mon == 1 && m_day == 1))
+        if( !(m_mon == 1 && m_day == 1)) // If not first day of year
         {
             if(get_month_day() - 1 >= 1)
             {
                 --m_day;
 
-            } else {
+            } else { // If first day of month
                 --m_mon;
-                int month_duration = (get_month() != 2 && get_month_day() != 28) ? mon_duration[get_month()-1] : mon_duration[get_month()-1] + static_cast<int>(isleap(get_year()));
-                m_day = month_duration;
+                m_day = (get_month() != 2) ? mon_duration[get_month()-1] : mon_duration[get_month()-1] + static_cast<int>(isleap(get_year()));
             }
-        } else {
+        } else { // If first day of year
             --m_year;
             m_day = 31;
             m_mon = 12;
@@ -210,24 +231,7 @@ namespace project{
         }
         return *this;
     }
-
-    STATIC Date Date::random_date()
-    {
-        std::random_device dev;
-        static std::mt19937 eng( dev() );
-        static std::uniform_int_distribution dist_year{ random_min_year, random_max_year };
-        static std::uniform_int_distribution dist_mon{ 1, 12 };
-
-        int year{ dist_year(eng) };
-        int mon{ dist_mon(eng) };
-
-        std::uniform_int_distribution dist_day{ 25, mon_duration[mon-1] + static_cast<int>(isleap(year)) };
-        int day{ dist_day(eng) };
-
-        return { day, mon, year };
-    }
     
-
     std::ostream& operator<<(std::ostream& os, const Date& o)
     {
         return os << o.get_month_day() << '/' << o.get_month() << '/' << o.get_year();
@@ -271,7 +275,6 @@ namespace project{
         // x == y
         return !(x < y) && !(y < x);
     }
-
 
     bool operator>(const Date& x, const Date& y)
     {
