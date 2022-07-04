@@ -24,7 +24,6 @@ namespace project{
             date[i++] = std::stoi(token);
             token = strtok(NULL, "/");
         }
-
     }
 
     // CTORS
@@ -234,7 +233,7 @@ namespace project{
     
     std::ostream& operator<<(std::ostream& os, const Date& o)
     {
-        return os << o.get_month_day() << '/' << o.get_month() << '/' << o.get_year();
+        return os << o.get_month_day() << ' ' << Date::months[o.get_month()-1] << ' ' << o.get_year() << ' ' << Date::days[static_cast<int>(o.get_week_day())];
     }
 
     std::istream& operator>>(std::istream& is, Date& o)

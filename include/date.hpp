@@ -45,18 +45,41 @@ private:
     int m_mon = 1;
     int m_year = year_base;
     static constexpr int mon_duration[12]{
-        31, // Ocak 
-        28, // Subat
-        31, // Mart
-        30, // Nisan
-        31, // Mayıs
-        30, // Haziran
-        31, // Temmuz
-        31, // Ağustos
-        30, // Eylül
-        31, // Ekim
-        30, // Kasım
-        31, // Aralık
+        31, //Jan
+        28, //Feb
+        31, //Mar
+        30, //Apr
+        31, //May
+        30, //Jun
+        31, //Jul
+        31, //Aug
+        30, //Sep
+        31, //Oct
+        30, //Nov
+        31, //Dec
+    };
+    static constexpr const char* months[]{
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    };
+    static constexpr const char* days[]{
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
     };
 };
 

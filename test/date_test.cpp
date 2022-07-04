@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <cstdlib>
+#include <sstream>
 
 class DateTest : public ::testing::Test
 {
@@ -530,4 +531,20 @@ TEST_F(DateTest, WeekDayDecrement_2)
     -- day;
 
     EXPECT_EQ(day, Weekday::Friday);
+}
+
+TEST_F(DateTest, OStreamTest_1)
+{
+    project::Date date{ 4, 7, 2022 };   
+    std::stringstream ss;
+    ss << date;
+    EXPECT_STREQ(ss.str().c_str(), "4 Jul 2022 Monday" );
+}
+
+TEST_F(DateTest, OStreamTest_2)
+{
+    project::Date date{ "20/1/1997" };   
+    std::stringstream ss;
+    ss << date;
+    EXPECT_STREQ(ss.str().c_str(), "20 Jan 1997 Monday" );
 }
